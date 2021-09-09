@@ -32,7 +32,11 @@
             </div>
             <!-- /.card-header -->
             <!-- form start -->
-            <form action="/voucher/create" method="POST" enctype="multipart/form-data">
+            <form
+              action="/voucher/create"
+              method="POST"
+              enctype="multipart/form-data"
+            >
               <div class="card-body">
                 <div class="form-group">
                   <label for="name">Name of Game</label>
@@ -69,7 +73,7 @@
                       data-placeholder="Choose game voucher nominal"
                       multiple="multiple"
                       style="width: 100%"
-                      name="nominal"
+                      name="nominals"
                       required
                     >
                       <% nominal.forEach(nominal => { %>
