@@ -13,6 +13,7 @@ module.exports = {
         // render view ejs
         res.render("admin/users/view_signin", {
           alert,
+          title: "Sign In",
         });
       } else {
         res.redirect("/dashboard");
@@ -62,5 +63,9 @@ module.exports = {
       req.flash("alertStatus", "danger");
       res.redirect("/");
     }
+  },
+  actionLogOut: (req, res) => {
+    req.session.destroy();
+    res.redirect("/");
   },
 };
