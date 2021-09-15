@@ -8,8 +8,7 @@ module.exports = {
       const alertStatus = req.flash("alertStatus");
 
       const alert = { message: alertMessage, status: alertStatus };
-      const transaction = await Transaction.find();
-      console.log(transaction[0]);
+      const transaction = await Transaction.find().populate('player');
       // render view ejs
       res.render("admin/transaction/view_transaction", {
         transaction,
