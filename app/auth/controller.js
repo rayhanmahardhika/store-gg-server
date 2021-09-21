@@ -84,15 +84,17 @@ module.exports = {
               {
                 player: {
                   id: player._id,
-                  username: player._id,
-                  email: player._id,
-                  name: player._id,
-                  phoneNumber: player._id,
-                  avatar: player._id,
+                  username: player.username,
+                  email: player.email,
+                  name: player.name,
+                  phoneNumber: player.phoneNumber,
+                  avatar: player.avatar,
                 },
               },
               config.jwtKey
             );
+            // send the TOKEN content
+            res.status(200).json({ data: { token } });
           } else {
             res.status(403).json({
               message: "Password incorrect",
