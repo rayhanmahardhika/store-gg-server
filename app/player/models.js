@@ -1,4 +1,7 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
+
+const HASH_ROUND = 10;
 
 let playerSchema = mongoose.Schema(
   {
@@ -55,5 +58,24 @@ let playerSchema = mongoose.Schema(
   },
   { timestamps: true }
 );
+
+playerSchema.path("email").validate(
+  async function (value) {
+    try {
+      const count = await this.model("Player").countDocuments({ email: value });
+
+      return !count;
+    } catch (err) {
+      throw err;
+    }
+  },
+  (attr) => `${attr.value} sudah terdaftar`
+);
+
+// fungsi sebelum saving
+playerSchema.pre("save", function (next) {
+  this.password = bcrypt.hashSync(this.password, HASH_ROUND);
+  next();
+});
 
 module.exports = mongoose.model("Player", playerSchema);
