@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 let transactionSchema = mongoose.Schema(
   {
-    historyVoucherTopup: {
+    voucherTopupHistory: {
       gameName: {
         type: String,
         require: [true, "Game Name cannot be empty"],
@@ -38,10 +38,6 @@ let transactionSchema = mongoose.Schema(
       bankName: {
         type: String,
         require: [true, "Bank Name cannot be empty"],
-      },
-      accountNumber: {
-        type: String,
-        require: [true, "Account Number cannot be empty"],
       },
       accountNumber: {
         type: String,
