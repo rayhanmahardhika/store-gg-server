@@ -38,8 +38,13 @@ module.exports = {
         return res.status(404).json({ message: "No Voucher found" });
       }
 
+      const payment = await Payment.find();
+
       res.status(200).json({
-        data: voucher,
+        data: {
+          voucher,
+          payment,
+        },
       });
     } catch (err) {
       res.status(500).json({ message: err.message || "Internal Server Error" });
