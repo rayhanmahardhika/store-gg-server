@@ -8,4 +8,9 @@ module.exports = {
   serviceName: process.env.SERVICE_NAME,
   jwtKey: process.env.SECRET,
   urlDB: process.env.MONGO_URL,
+  clientID: process.env.CLIENT_ID,
+  clientSecret: process.env.CLIENT_SECRET,
+  redirectURI: process.env.REDIRECT_URI,
+  refreshToken: process.env.REFRESH_TOKEN,
+  folderID: process.env.FOLDER_ID,
 };

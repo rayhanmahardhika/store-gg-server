@@ -4,6 +4,8 @@ const fs = require("fs");
 const config = require("../../config");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { google } = require("googleapis");
+const { postImage } = require("../../config/drive-api");
 
 // API untuk auth
 module.exports = {
@@ -20,35 +22,46 @@ module.exports = {
             req.file.originalname.split(".").length - 1
           ];
         let fileName = req.file.filename + "." + originalExt;
-        let targetPath = path.resolve(
-          config.rootPath,
-          `public/uploads/${fileName}`
-        );
+        // let targetPath = path.resolve(
+        //   config.rootPath,
+        //   `public/uploads/${fileName}`
+        // );
 
-        const src = fs.createReadStream(tmpPath);
-        const dest = fs.createWriteStream(targetPath);
+        // const src = fs.createReadStream(tmpPath);
+        // const dest = fs.createWriteStream(targetPath);
 
-        src.pipe(dest);
-        src.on("end", async () => {
-          try {
-            const player = new Player({ ...payload, avatar: fileName });
+        // menggunakan fungsi postImage ke drive
+        const driveFileID = await postImage(tmpPath, fileName, originalExt);
 
-            await player.save();
-            // menghapus password dari object player
-            delete player._doc.password;
+        const player = new Player({ ...payload, avatar: driveFileID });
 
-            res.status(201).json({ data: player });
-          } catch (err) {
-            if (err && err.name === "ValidationError") {
-              return res.status(422).json({
-                error: 1,
-                message: err.message,
-                fields: err.errors,
-              });
-            }
-            next(err);
-          }
-        });
+        await player.save();
+        // menghapus password dari object player
+        delete player._doc.password;
+
+        res.status(201).json({ data: player });
+
+        // src.pipe(dest);
+        // src.on("end", async () => {
+        //   try {
+        //     const player = new Player({ ...payload, avatar: fileName });
+
+        //     await player.save();
+        //     // menghapus password dari object player
+        //     delete player._doc.password;
+
+        //     res.status(201).json({ data: player });
+        //   } catch (err) {
+        //     if (err && err.name === "ValidationError") {
+        //       return res.status(422).json({
+        //         error: 1,
+        //         message: err.message,
+        //         fields: err.errors,
+        //       });
+        //     }
+        //     next(err);
+        //   }
+        // });
       } else {
         let player = new Player(payload);
 
@@ -70,7 +83,7 @@ module.exports = {
     }
   },
   // API SignIn
-  // fungsi menggunakan then (bukan async)
+  // fungsi menggunakan then/promise (bukan async)
   signIn: (req, res, next) => {
     const { email, password } = req.body;
 
