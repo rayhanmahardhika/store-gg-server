@@ -255,13 +255,6 @@ module.exports = {
             req.file.originalname.split(".").length - 1
           ];
         let fileName = req.file.filename + "." + originalExt;
-        // let targetPath = path.resolve(
-        //   config.rootPath,
-        //   `public/uploads/${fileName}`
-        // );
-
-        // const src = fs.createReadStream(tmpPath);
-        // const dest = fs.createWriteStream(targetPath);
 
         // menggunakan fungsi postImage ke drive
         const driveFileID = await postImage(tmpPath, fileName, originalExt);
