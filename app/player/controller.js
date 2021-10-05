@@ -268,13 +268,7 @@ module.exports = {
 
         let player = await Player.findOne({ _id: req.player._id });
 
-        try {
-          await deleteImage(player.avatar);
-        } catch (err) {
-          res
-            .status(500)
-            .json({ message: err.message || "Internal Server Error" });
-        }
+        await deleteImage(player.avatar);
 
         player = await Player.findOneAndUpdate(
           { _id: req.player._id },
@@ -322,7 +316,7 @@ module.exports = {
         //   });
 
         //   src.on("err", async () => {
-        //     next(err);
+        // next(err);
         //   });
         // });
       } else {
