@@ -17,7 +17,7 @@ const drive = google.drive({
 });
 
 module.exports = {
-  // post image to Drive 
+  // post image to Drive
   postImage: async (path, filename, ext) => {
     try {
       // create file
@@ -44,17 +44,17 @@ module.exports = {
 
       return res.data.id;
     } catch (err) {
-      console.log(err.message);
+      return err.message;
     }
   },
   // delete image from drive
   deleteImage: async (fileId) => {
     try {
-      const res = await drive.files.delete({
+      await drive.files.delete({
         fileId,
       });
     } catch (err) {
-      console.log(err.message);
+      return err.message;
     }
   },
 };

@@ -5,9 +5,9 @@ const Payment = require("../payment/models");
 const Transaction = require("../transaction/models");
 const Bank = require("../bank/models");
 const Category = require("../category/models");
-const path = require("path");
 const fs = require("fs");
 const config = require("../../config");
+const { postImage, deleteImage } = require("../../config/drive-api");
 
 module.exports = {
   // Pembuatan API untuk front end
@@ -255,45 +255,76 @@ module.exports = {
             req.file.originalname.split(".").length - 1
           ];
         let fileName = req.file.filename + "." + originalExt;
-        let targetPath = path.resolve(
-          config.rootPath,
-          `public/uploads/${fileName}`
+        // let targetPath = path.resolve(
+        //   config.rootPath,
+        //   `public/uploads/${fileName}`
+        // );
+
+        // const src = fs.createReadStream(tmpPath);
+        // const dest = fs.createWriteStream(targetPath);
+
+        // menggunakan fungsi postImage ke drive
+        const driveFileID = await postImage(tmpPath, fileName, originalExt);
+
+        let player = await Player.findOne({ _id: req.player._id });
+
+        try {
+          await deleteImage(player.avatar);
+        } catch (err) {
+          res
+            .status(500)
+            .json({ message: err.message || "Internal Server Error" });
+        }
+
+        player = await Player.findOneAndUpdate(
+          { _id: req.player._id },
+          {
+            ...payload,
+            avatar: driveFileID,
+          },
+          { new: true, runValidators: true }
         );
 
-        const src = fs.createReadStream(tmpPath);
-        const dest = fs.createWriteStream(targetPath);
-
-        src.pipe(dest);
-        src.on("end", async () => {
-          let player = await Player.findOne({ _id: req.player._id });
-
-          let currentImage = `${config.rootPath}/public/uploads/${player.avatar}`;
-          if (fs.existsSync(currentImage)) {
-            fs.unlinkSync(currentImage);
-          }
-
-          player = await Player.findOneAndUpdate(
-            { _id: req.player._id },
-            {
-              ...payload,
-              avatar: fileName,
-            },
-            { new: true, runValidators: true }
-          );
-
-          res.status(201).json({
-            data: {
-              id: player.id,
-              name: player.name,
-              phoneNumber: player.phoneNumber,
-              avatar: player.avatar,
-            },
-          });
-
-          src.on("err", async () => {
-            next(err);
-          });
+        res.status(201).json({
+          data: {
+            id: player.id,
+            name: player.name,
+            phoneNumber: player.phoneNumber,
+            avatar: player.avatar,
+          },
         });
+
+        // src.pipe(dest);
+        // src.on("end", async () => {
+        //   let player = await Player.findOne({ _id: req.player._id });
+
+        //   let currentImage = `${config.rootPath}/public/uploads/${player.avatar}`;
+        //   if (fs.existsSync(currentImage)) {
+        //     fs.unlinkSync(currentImage);
+        //   }
+
+        //   player = await Player.findOneAndUpdate(
+        //     { _id: req.player._id },
+        //     {
+        //       ...payload,
+        //       avatar: fileName,
+        //     },
+        //     { new: true, runValidators: true }
+        //   );
+
+        //   res.status(201).json({
+        //     data: {
+        //       id: player.id,
+        //       name: player.name,
+        //       phoneNumber: player.phoneNumber,
+        //       avatar: player.avatar,
+        //     },
+        //   });
+
+        //   src.on("err", async () => {
+        //     next(err);
+        //   });
+        // });
       } else {
         const player = await Player.findOneAndUpdate(
           { _id: req.player._id },
